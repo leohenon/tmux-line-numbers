@@ -1,6 +1,6 @@
 # tmux-line-numbers
 
-![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/JosephLai241/tmux-line-numbers/lint.yml?style=flat-square&label=shellcheck)
+[![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/JosephLai241/tmux-line-numbers/lint.yml?style=flat-square&label=shellcheck)](https://github.com/JosephLai241/tmux-line-numbers/actions/workflows/lint.yml)
 
 > [!IMPORTANT]
 >
