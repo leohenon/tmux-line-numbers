@@ -4,7 +4,7 @@
 >
 > Requires tmux 3.2+ (uses `pane-mode-changed` hook and `copy_cursor_y` format).
 
-Display line numbers in tmux when in copy-mode. Like vim's `relativenumber`, a narrow pane appears on the left showing how many lines away each line is from your cursor so you can instantly see that you need `5k`, `12j`, etc. to get where you want.
+Display line numbers in tmux when in `copy-mode`. Like vim's `relativenumber`, a narrow pane appears on the left showing how many lines away each line is from your cursor so you can instantly see that you need `5k`, `12j`, etc. to get where you want.
 
 The cursor line shows its absolute line number in the buffer, while all other lines show their relative distance.
 
@@ -50,35 +50,39 @@ Then install with TPM: `prefix` + `I`.
 
 # Configuration
 
+> [!NOTE]
+>
+> The default values are shown in the example configuration below.
+
 Configuration is optional. Add any of these to `~/.tmux.conf`:
 
 ```tmux
-# Background color for the current line (default: default)
-set -g @line-numbers-current-line-bg '#2A2A37'
+# Background color for the current line.
+set -g @line-numbers-current-line-bg default
 
-# Bold the current line number (default: on)
-set -g @line-numbers-current-line-bold off
+# Bold the current line number (`on`, `off`).
+set -g @line-numbers-current-line-bold on
 
-# Foreground color for the current line (default: yellow)
-set -g @line-numbers-current-line-fg '#FF9E3B'
+# Foreground color for the current line.
+set -g @line-numbers-current-line-fg yellow
 
-# Background color for other line numbers (default: default)
-set -g @line-numbers-bg '#2A2A37'
+# Background color for other line numbers.
+set -g @line-numbers-bg default
 
-# Foreground color for other line numbers (default: colour243)
-set -g @line-numbers-fg '#54546D'
+# Foreground color for other line numbers.
+set -g @line-numbers-fg colour243
 
-# Minimum pane width required to show line numbers (default: 40)
-set -g @line-numbers-min-pane-width 60
+# Minimum pane width required to show line numbers.
+set -g @line-numbers-min-pane-width 40
 
-# Poll interval in seconds for cursor position updates (default: 0.1)
-set -g @line-numbers-poll-interval 0.05
+# Poll interval in seconds for cursor position updates.
+set -g @line-numbers-poll-interval 0.1
 
-# Position of the line number column (default: left)
-set -g @line-numbers-position right
+# Position of the line number column (`left`, `right`).
+set -g @line-numbers-position left
 
-# Show relative distances from cursor or absolute line numbers (default: on)
-set -g @line-numbers-relative off
+# Show relative distances from cursor or absolute line numbers (`on`, `off`).
+set -g @line-numbers-relative on
 ```
 
 Colors accept the following values:
@@ -90,9 +94,17 @@ Colors accept the following values:
 
 # How It Works
 
-1. A `pane-mode-changed` hook detects when you enter or exit copy-mode.
-1. On entry, a narrow pane is split to the left running a render loop.
-1. The render loop polls `copy_cursor_y` (~10 times/sec) and redraws the line numbers when the cursor moves.
-1. On exit, the line-number pane is automatically cleaned up.
+## Scripts
 
-The width of the line-number column adapts to the size of your scrollback buffer.
+- **`line-numbers.tmux`**: Entry point sourced by TPM. Registers a global `pane-mode-changed` hook.
+- **`scripts/on-mode-changed.sh`**: Hook handler. Reads all user configuration, then either creates or destroys the `line-number` pane.
+- **`scripts/render-loop.sh`**: Runs inside the `line-number` pane. Polls the target pane's `copy_cursor_y` and redraws when the cursor moves.
+
+## Flow
+
+1. When you enter `copy-mode`, the `pane-mode-changed` hook fires and calls `on-mode-changed.sh`.
+1. The script checks the pane is in `copy-mode` (not command mode), reads configuration, and verifies the pane meets the minimum width.
+1. A narrow pane is split to the configured side running `render-loop.sh`, which polls cursor position (~10 times/sec by default) and renders line numbers.
+1. When you exit `copy-mode`, the hook fires again and the `line-number` pane is automatically killed.
+
+The width of the `line-number` column adapts to the size of your scrollback buffer. A helper script (`scripts/color.sh`) converts tmux color names, 256-palette values, and hex codes to ANSI escape sequences at startup.
