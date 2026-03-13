@@ -6,7 +6,7 @@ TARGET_PANE="$1"
 
 # The absolute path to the scripts directory.
 SCRIPTS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-# shellcheck source=color.sh
+# shellcheck source=scripts/color.sh
 source "$SCRIPTS_DIR/color.sh"
 
 # Background ANSI code for the current line.
@@ -60,6 +60,7 @@ render() {
     for ((line = 0; line < pane_height; line++)); do
         rel=$((line - screen_y))
 
+        # shellcheck disable=SC2059 # Format strings contain pre-built ANSI codes.
         if [ $rel -eq 0 ]; then
             # Current line: bold with configured colors.
             printf "${STYLE_CURRENT}${FMT}${STYLE_RESET}\e[K" "$abs_line"
