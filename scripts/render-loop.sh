@@ -25,6 +25,9 @@ LN_BG_CODE="$(tmux_color_to_ansi "${6:-default}" bg)"
 LN_FG_CODE="$(tmux_color_to_ansi "${7:-colour243}" fg)"
 # Seconds between cursor position polls.
 POLL_INTERVAL="${8:-0.1}"
+if ! [[ "$POLL_INTERVAL" =~ ^[0-9]*\.?[0-9]+$ ]]; then
+    POLL_INTERVAL=0.1
+fi
 # Whether to show relative ("on") or absolute ("off") line numbers.
 RELATIVE="${9:-on}"
 
@@ -103,6 +106,9 @@ while true; do
 	# Get the absolute line number (distance from top of scrollback to cursor).
 	# Adds 1 to make it 1-indexed (line 1 is the first line of the output).
     abs_line=$((hist_size - scroll_pos + screen_y + 1))
+    if [ "$abs_line" -lt 1 ]; then
+        abs_line=1
+    fi
 
     # Only re-render if the position or height has changed.
     if [ "$screen_y" = "$LAST_SCREEN_Y" ] && [ "$pane_height" = "$LAST_HEIGHT" ] && [ "$abs_line" = "$LAST_ABS" ]; then
