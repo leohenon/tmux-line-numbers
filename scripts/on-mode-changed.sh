@@ -78,6 +78,7 @@ if [ "$IN_MODE" = "1" ]; then
 
     # Split a pane for line numbers. Each argument is single-quoted to protect
     # special characters like "#" in hex colors.
+    # shellcheck disable=SC2086 # Intentional word splitting on SPLIT_FLAGS.
     LN_PANE=$(tmux split-window -t "$PANE_ID" $SPLIT_FLAGS -PF '#{pane_id}' \
         -e "$MARKER=$PANE_ID" \
         "'$SCRIPTS_DIR/render-loop.sh' '$PANE_ID' '$CUR_BG' '$CUR_BOLD' '$CUR_FG' '$DIGITS' '$LN_BG' '$LN_FG' '$POLL_INTERVAL' '$RELATIVE'")
