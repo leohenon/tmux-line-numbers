@@ -96,7 +96,7 @@ if [ "$IN_MODE" = "1" ]; then
     tmux select-pane -t "$PANE_ID"
 else
     # Kill the line-number pane if it exists when exiting copy-mode.
-    LN_PANE=$(tmux show-options -p -t "$PANE_ID" -v @line_numbers_pane 2>/dev/null)
+    LN_PANE=$(tmux show-option -p -t "$PANE_ID" -v @line_numbers_pane 2>/dev/null)
     if [ -n "$LN_PANE" ]; then
         tmux kill-pane -t "$LN_PANE" 2>/dev/null
         tmux set-option -pu -t "$PANE_ID" @line_numbers_pane 2>/dev/null
