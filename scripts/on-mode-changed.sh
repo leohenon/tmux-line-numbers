@@ -19,7 +19,7 @@ if [ "$IN_MODE" = "1" ]; then
     fi
 
     # Don't create a second line-number pane if one already exists.
-    EXISTING=$(tmux list-panes -F '#{pane_id} #{pane_start_command}' 2>/dev/null | grep "$MARKER=$PANE_ID" | awk '{print $1}')
+    EXISTING=$(tmux list-panes -F '#{pane_id} #{pane_start_command}' 2>/dev/null | grep -F "$MARKER=$PANE_ID" | awk '{print $1}')
     if [ -n "$EXISTING" ]; then
         exit 0
     fi
